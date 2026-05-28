@@ -1,36 +1,67 @@
-import { StyleSheet, Text, TextProps } from 'react-native';
+import { Text, type TextProps, type TextStyle } from 'react-native';
 
-import { Typography, useThemeColors } from '@/theme';
+import { FontFamily, Palette, Typography } from '@/theme';
 
-type AppTextProps = TextProps & {
-  color?: 'default' | 'muted';
-  variant?: 'body' | 'title';
+type AppTextVariant = 'hero' | 'h1' | 'h2' | 'body' | 'caption' | 'counter';
+type AppTextColor = 'primary' | 'secondary' | 'accent' | 'success' | 'default' | 'muted';
+
+interface AppTextProps extends TextProps {
+  variant?: AppTextVariant;
+  color?: AppTextColor;
+}
+
+const variantStyles: Record<AppTextVariant, TextStyle> = {
+  hero: {
+    fontSize: Typography.hero.fontSize,
+    lineHeight: Typography.hero.lineHeight,
+    fontFamily: FontFamily.heading,
+  },
+  h1: {
+    fontSize: Typography.h1.fontSize,
+    lineHeight: Typography.h1.lineHeight,
+    fontFamily: FontFamily.headingSemiBold,
+  },
+  h2: {
+    fontSize: Typography.h2.fontSize,
+    lineHeight: Typography.h2.lineHeight,
+    fontFamily: FontFamily.headingSemiBold,
+  },
+  body: {
+    fontSize: Typography.body.fontSize,
+    lineHeight: Typography.body.lineHeight,
+    fontFamily: FontFamily.body,
+  },
+  caption: {
+    fontSize: Typography.caption.fontSize,
+    lineHeight: Typography.caption.lineHeight,
+    fontFamily: FontFamily.bodyRegular,
+  },
+  counter: {
+    fontSize: Typography.counter.fontSize,
+    lineHeight: Typography.counter.lineHeight,
+    fontFamily: FontFamily.heading,
+  },
 };
 
-export function AppText({ color = 'default', style, variant = 'body', ...props }: AppTextProps) {
-  const colors = useThemeColors();
+const colorMap: Record<AppTextColor, string> = {
+  primary: Palette.textPrimary,
+  default: Palette.textPrimary,
+  secondary: Palette.textSecondary,
+  muted: Palette.textSecondary,
+  accent: Palette.textAccent,
+  success: Palette.success,
+};
 
+export function AppText({
+  variant = 'body',
+  color = 'primary',
+  style,
+  ...props
+}: AppTextProps) {
   return (
     <Text
-      style={[
-        styles[variant],
-        { color: color === 'muted' ? colors.textMuted : colors.text },
-        style,
-      ]}
+      style={[variantStyles[variant], { color: colorMap[color] }, style]}
       {...props}
     />
   );
 }
-
-const styles = StyleSheet.create({
-  body: {
-    fontSize: Typography.body.fontSize,
-    lineHeight: Typography.body.lineHeight,
-    fontWeight: '500',
-  },
-  title: {
-    fontSize: Typography.title.fontSize,
-    lineHeight: Typography.title.lineHeight,
-    fontWeight: '700',
-  },
-});

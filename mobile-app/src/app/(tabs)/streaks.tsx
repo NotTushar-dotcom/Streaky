@@ -4,7 +4,7 @@ import { AppText } from '@/components/ui/AppText';
 export default function StreaksScreen() {
   return (
     <Screen>
-      <AppText variant="title">Streaks</AppText>
+      <AppText variant="h1">Streaks</AppText>
       <AppText color="muted">Your streak list will live here.</AppText>
     </Screen>
   );

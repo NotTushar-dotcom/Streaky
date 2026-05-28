@@ -1,15 +1,28 @@
-import { PropsWithChildren } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { type PropsWithChildren } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Spacing, useThemeColors } from '@/theme';
+import { Palette, Spacing } from '@/theme';
 
-export function Screen({ children }: PropsWithChildren) {
-  const colors = useThemeColors();
+interface ScreenProps extends PropsWithChildren {
+  /** Enable vertical scrolling for content-heavy screens */
+  scrollable?: boolean;
+}
 
+export function Screen({ children, scrollable = false }: ScreenProps) {
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
-      <View style={styles.content}>{children}</View>
+    <SafeAreaView style={styles.safeArea}>
+      {scrollable ? (
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {children}
+        </ScrollView>
+      ) : (
+        <View style={styles.content}>{children}</View>
+      )}
     </SafeAreaView>
   );
 }
@@ -17,11 +30,21 @@ export function Screen({ children }: PropsWithChildren) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    backgroundColor: Palette.bgPrimary,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    gap: Spacing.xl,
+    paddingHorizontal: Spacing.xl,
+    paddingTop: Spacing.lg,
+    paddingBottom: Spacing.xxxl + 20,
   },
   content: {
     flex: 1,
     gap: Spacing.md,
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Spacing.xl,
     paddingVertical: Spacing.lg,
   },
 });
