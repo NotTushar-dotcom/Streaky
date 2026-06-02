@@ -66,7 +66,7 @@ class StreakSummaryCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            'Total Streak',
+                            'Current Streak',
                             style: TextStyle(
                               color: Colors.white.withAlpha(220),
                               fontSize: 14,
@@ -127,7 +127,7 @@ class StreakSummaryCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Streak',
+                            'Best Streak',
                             style: TextStyle(
                               color: Colors.white.withAlpha(160),
                               fontSize: 13,
