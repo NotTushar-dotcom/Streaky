@@ -61,6 +61,16 @@ class _AuthScreenState extends State<AuthScreen>
     final success = await authProvider.signInWithGoogle();
     if (success && mounted) {
       _navigateToHome();
+    } else if (mounted) {
+      final error = authProvider.error ?? 'Google Sign-In failed';
+      debugPrint('Google Sign-In Error: $error');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
     }
   }
 
@@ -85,6 +95,16 @@ class _AuthScreenState extends State<AuthScreen>
 
     if (success && mounted) {
       _navigateToHome();
+    } else if (mounted) {
+      final error = authProvider.error ?? 'Authentication failed';
+      debugPrint('Email Auth Error: $error');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
     }
   }
 
