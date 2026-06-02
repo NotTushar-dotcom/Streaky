@@ -71,12 +71,17 @@ class StreakProvider extends ChangeNotifier {
       final day = monday.add(Duration(days: i));
       if (day.isAfter(now)) return false;
 
-      // Check if any streak has a lastCheckIn on this day
+      // Check if any active streak was completed on this day
       return _streaks.any((s) {
-        if (s.lastCheckIn == null) return false;
-        return s.lastCheckIn!.year == day.year &&
-            s.lastCheckIn!.month == day.month &&
-            s.lastCheckIn!.day == day.day;
+        if (s.lastCheckIn == null || s.isArchived) return false;
+        final lastCheckInDate = DateTime(
+          s.lastCheckIn!.year,
+          s.lastCheckIn!.month,
+          s.lastCheckIn!.day,
+        );
+        final targetDate = DateTime(day.year, day.month, day.day);
+        final daysDiff = lastCheckInDate.difference(targetDate).inDays;
+        return daysDiff >= 0 && daysDiff < s.currentStreak;
       });
     });
   }

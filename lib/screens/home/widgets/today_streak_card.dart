@@ -124,9 +124,17 @@ class _WeeklyDotsRow extends StatelessWidget {
         // Check if streak was active on this day
         bool isCompleted = false;
         if (!isFuture && streak.lastCheckIn != null) {
-          // Simplified: show completed for days up to current streak
-          final daysSinceLastCheckIn = now.difference(day).inDays;
-          isCompleted = daysSinceLastCheckIn < streak.currentStreak;
+          // Calculate the difference in calendar days between last check-in and this day
+          final lastCheckInDate = DateTime(
+            streak.lastCheckIn!.year,
+            streak.lastCheckIn!.month,
+            streak.lastCheckIn!.day,
+          );
+          final targetDate = DateTime(day.year, day.month, day.day);
+          final daysDiff = lastCheckInDate.difference(targetDate).inDays;
+
+          // If the day is on or before lastCheckIn, and falls within the current streak count
+          isCompleted = daysDiff >= 0 && daysDiff < streak.currentStreak;
         }
 
         return Container(
