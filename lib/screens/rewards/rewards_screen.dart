@@ -6,6 +6,7 @@ import 'package:streaky/models/achievement_model.dart';
 import 'package:streaky/providers/user_provider.dart';
 import 'package:streaky/providers/streak_provider.dart';
 import 'package:streaky/widgets/fire_mascot.dart';
+import 'package:streaky/widgets/glassmorphic_container.dart';
 import 'widgets/achievement_card.dart';
 import 'widgets/badge_grid.dart';
 
@@ -73,24 +74,10 @@ class _RewardsScreenState extends State<RewardsScreen>
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Container(
+                child: GlassmorphicContainer(
+                  borderRadius: 20,
+                  glowColor: AppColors.cyanHighlight,
                   padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [
-                        Color(0xFF1A3A4A),
-                        Color(0xFF1E2D3D),
-                        Color(0xFF162230),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: AppColors.cyanHighlight.withAlpha(20),
-                      width: 1,
-                    ),
-                  ),
                   child: Row(
                     children: [
                       Expanded(

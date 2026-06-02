@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:streaky/config/app_colors.dart';
 import 'package:streaky/config/app_text_styles.dart';
 import 'package:streaky/models/achievement_model.dart';
+import 'package:streaky/widgets/glassmorphic_container.dart';
 
 /// Individual achievement card with progress indicator.
 /// Shows green checkmark when completed, or "X/Y" text + progress bar when in progress.
@@ -22,19 +23,12 @@ class AchievementCard extends StatelessWidget {
     // Calculate current/required values for display
     final currentValue = (progress * achievement.requiredValue).round();
     final requiredValue = achievement.requiredValue;
+    final glowColor = isUnlocked ? AppColors.limeSuccess : null;
 
-    return Container(
+    return GlassmorphicContainer(
+      borderRadius: 16,
+      glowColor: glowColor,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isUnlocked
-              ? AppColors.limeSuccess.withAlpha(20)
-              : AppColors.surfaceLight.withAlpha(60),
-          width: 1,
-        ),
-      ),
       child: Row(
         children: [
           // Emoji badge

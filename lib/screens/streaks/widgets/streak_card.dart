@@ -3,7 +3,7 @@ import 'package:streaky/config/app_colors.dart';
 import 'package:streaky/config/app_text_styles.dart';
 import 'package:streaky/config/streak_categories.dart';
 import 'package:streaky/models/streak_model.dart';
-import 'package:streaky/widgets/glow_card.dart';
+import 'package:streaky/widgets/glassmorphic_container.dart';
 
 /// Streak card for the "My Streaks" grid/list.
 class StreakCard extends StatelessWidget {
@@ -23,12 +23,14 @@ class StreakCard extends StatelessWidget {
     final category = StreakCategories.byId(streak.category);
     final color = category.color;
 
-    return GlowCard(
-      glowColor: color,
+    return GestureDetector(
       onTap: onTap,
       onLongPress: onDelete,
-      padding: const EdgeInsets.all(16),
-      child: Column(
+      child: GlassmorphicContainer(
+        borderRadius: 20,
+        glowColor: color,
+        padding: const EdgeInsets.all(16),
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Top row: emoji + streak count with fire icon
@@ -103,6 +105,7 @@ class StreakCard extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 }
