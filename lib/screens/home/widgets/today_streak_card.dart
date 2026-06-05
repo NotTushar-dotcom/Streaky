@@ -86,7 +86,9 @@ class TodayStreakCard extends StatelessWidget {
                 const SizedBox(width: 3),
                 Icon(
                   Icons.local_fire_department_rounded,
-                  color: AppColors.primaryOrange,
+                  color: streak.completedToday
+                      ? AppColors.primaryOrange
+                      : AppColors.primaryOrange.withValues(alpha: 0.25),
                   size: 18,
                 ),
               ],

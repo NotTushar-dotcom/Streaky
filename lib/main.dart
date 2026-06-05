@@ -9,8 +9,9 @@ import 'config/app_router.dart';
 import 'providers/auth_provider.dart';
 import 'providers/user_provider.dart';
 import 'providers/streak_provider.dart';
+import 'providers/notification_provider.dart';
 import 'services/notification_service.dart';
-import 'package:timezone/timezone.dart' as tz;
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,21 +22,7 @@ void main() async {
   final granted = await notificationService.requestPermissions();
   debugPrint('Notification permissions granted: $granted');
 
-  if (granted) {
-    try {
-      final now = tz.TZDateTime.now(tz.local);
-      final testScheduledDate = now.add(const Duration(seconds: 15));
-      final id = 'Leetcode Daily'.hashCode & 0x7FFFFFFF;
-      await notificationService.scheduleTestReminder(
-        id: id,
-        title: 'Leetcode Daily',
-        emoji: '💻',
-        scheduledDate: testScheduledDate,
-      );
-    } catch (e) {
-      debugPrint('Failed to schedule test reminder: $e');
-    }
-  }
+
 
   // Register notification click handler
   NotificationService.onNotificationClick = (streakId) {
@@ -102,6 +89,7 @@ class StreakyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => StreakProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationProvider()..loadHistory()),
       ],
       child: MaterialApp.router(
         title: 'Streaky',

@@ -144,26 +144,6 @@ class HomeScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-
-                    // Bottom "+ Check In" button
-                    _CheckInButton(
-                      onPressed: () {
-                        // Check in all pending streaks or show streak selection
-                        final pending = streakProvider.pendingToday;
-                        if (pending.isNotEmpty) {
-                          for (final streak in pending) {
-                            streakProvider.checkIn(
-                              authProvider.uid,
-                              streak.id,
-                            );
-                            userProvider.addXP(
-                              authProvider.uid,
-                              UserProvider.xpPerCheckin,
-                            );
-                          }
-                        }
-                      },
-                    ),
                   ],
                 ),
               ),
@@ -208,61 +188,3 @@ class _EmptyStreaksHint extends StatelessWidget {
   }
 }
 
-/// Full-width gradient "+ Check In" button at the bottom.
-class _CheckInButton extends StatelessWidget {
-  final VoidCallback onPressed;
-
-  const _CheckInButton({required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
-      child: GestureDetector(
-        onTap: onPressed,
-        child: Container(
-          width: double.infinity,
-          height: 52,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [
-                Color(0xFFFF8A00),
-                Color(0xFFFF6B6B),
-                Color(0xFFFF1493),
-              ],
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-            ),
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFFFF8A00).withAlpha(40),
-                blurRadius: 16,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.add_rounded,
-                color: Colors.white,
-                size: 22,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                'Check In',
-                style: AppTextStyles.button.copyWith(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
