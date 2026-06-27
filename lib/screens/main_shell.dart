@@ -1,14 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:streaky/config/app_colors.dart';
 import 'package:streaky/config/app_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:streaky/providers/notification_provider.dart';
 
 /// Bottom navigation shell wrapping all main tab screens.
-class MainShell extends StatelessWidget {
+class MainShell extends StatefulWidget {
   final Widget child;
 
   const MainShell({super.key, required this.child});
+
+  @override
+  State<MainShell> createState() => _MainShellState();
+}
+
+class _MainShellState extends State<MainShell> {
+  @override
+  void initState() {
+    super.initState();
+    // Lazily load notification history AFTER splash is done and home screen is visible.
+    // This was previously done during app construction, blocking the first frame.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<NotificationProvider>().loadHistory();
+      }
+    });
+  }
 
   // Tab configuration
   static const _tabs = [
@@ -32,7 +51,7 @@ class MainShell extends StatelessWidget {
     final currentIndex = _currentIndex(context);
 
     return Scaffold(
-      body: child,
+      body: widget.child,
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,

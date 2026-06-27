@@ -97,20 +97,6 @@ class StreakProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    // Programmatically delete "Posting every day on X" and cancel its reminder
-    try {
-      final userName = await _firestoreService.getUserName(uid);
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userName)
-          .collection('streaks')
-          .doc("Posting every day on X")
-          .delete();
-      await NotificationService().cancelStreakReminder("Posting every day on X");
-    } catch (e) {
-      debugPrint('Error deleting "Posting every day on X": $e');
-    }
-
     _streakSubscription?.cancel();
     _streakSubscription =
         _firestoreService.streamAllStreaks(uid).listen((streaks) {
@@ -164,14 +150,8 @@ class StreakProvider extends ChangeNotifier {
 
   /// Evaluates and corrects each streak's completedToday and currentStreak properties.
   Future<void> _syncStreakStates(String uid, List<StreakModel> streaks) async {
-    // Seed/Update "Posting every day on X" streak as requested (Disabled)
-    // await _checkAndSeedXStreak(uid, streaks);
-
     final now = DateTime.now();
     for (final streak in streaks) {
-      if (streak.title.toLowerCase() == "posting every day on x") {
-        continue;
-      }
       bool expectedCompletedToday = false;
       int expectedCurrentStreak = streak.currentStreak;
 

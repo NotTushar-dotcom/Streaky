@@ -88,7 +88,16 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/fonts/
     - shorebird.yaml
+
+  fonts:
+    - family: Fredoka
+      fonts:
+        - asset: assets/fonts/Fredoka.ttf
+    - family: Outfit
+      fonts:
+        - asset: assets/fonts/Outfit.ttf
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'config/app_theme.dart';
@@ -16,41 +17,13 @@ import 'services/notification_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Notification Service and Request Permissions
-  final notificationService = NotificationService();
-  await notificationService.init();
-  final granted = await notificationService.requestPermissions();
-  debugPrint('Notification permissions granted: $granted');
-
-
-
-  // Register notification click handler
-  NotificationService.onNotificationClick = (streakId) {
-    debugPrint('App opened from notification click. Navigating to streak: $streakId');
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      AppRouter.router.push('/streak-details?id=${Uri.encodeComponent(streakId)}');
-    });
-  };
-
-  // Check if notification launched the app
-  try {
-    final launchDetails = await notificationService.getLaunchDetails();
-    if (launchDetails != null && launchDetails.didNotificationLaunchApp) {
-      final payload = launchDetails.notificationResponse?.payload;
-      if (payload != null && payload.isNotEmpty) {
-        debugPrint('App launched via notification click. Navigating to streak: $payload');
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          AppRouter.router.push('/streak-details?id=${Uri.encodeComponent(payload)}');
-        });
-      }
-    }
-  } catch (e) {
-    debugPrint('Error handling notification launch details: $e');
-  }
+  // Allow Google Fonts to fetch fonts and cache them. This prevents crashes
+  // when specific font weights/variants are missing from the bundled assets.
+  GoogleFonts.config.allowRuntimeFetching = true;
 
   // Lock to portrait mode (mobile only, not supported on web)
   if (!kIsWeb) {
-    await SystemChrome.setPreferredOrientations([
+    SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
@@ -76,7 +49,44 @@ void main() async {
     debugPrint('App will run in offline/demo mode.');
   }
 
+  // Run the app FIRST, then initialize heavy services in the background.
+  // This lets Flutter render the splash screen immediately.
   runApp(const StreakyApp());
+
+  // --- Deferred initialization (runs after first frame) ---
+  _initNotifications();
+}
+
+/// Initialize notification service in the background after the app is rendered.
+void _initNotifications() async {
+  try {
+    final notificationService = NotificationService();
+    await notificationService.init();
+    final granted = await notificationService.requestPermissions();
+    debugPrint('Notification permissions granted: $granted');
+
+    // Register notification click handler
+    NotificationService.onNotificationClick = (streakId) {
+      debugPrint('App opened from notification click. Navigating to streak: $streakId');
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        AppRouter.router.push('/streak-details?id=${Uri.encodeComponent(streakId)}');
+      });
+    };
+
+    // Check if notification launched the app
+    final launchDetails = await notificationService.getLaunchDetails();
+    if (launchDetails != null && launchDetails.didNotificationLaunchApp) {
+      final payload = launchDetails.notificationResponse?.payload;
+      if (payload != null && payload.isNotEmpty) {
+        debugPrint('App launched via notification click. Navigating to streak: $payload');
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          AppRouter.router.push('/streak-details?id=${Uri.encodeComponent(payload)}');
+        });
+      }
+    }
+  } catch (e) {
+    debugPrint('Error initializing notifications: $e');
+  }
 }
 
 class StreakyApp extends StatelessWidget {
@@ -89,7 +99,7 @@ class StreakyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => StreakProvider()),
-        ChangeNotifierProvider(create: (_) => NotificationProvider()..loadHistory()),
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
       ],
       child: MaterialApp.router(
         title: 'Streaky',

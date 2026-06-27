@@ -30,13 +30,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: streakProvider.isLoading
-            ? const Center(
-                child: CircularProgressIndicator(
-                  color: AppColors.primaryOrange,
-                ),
-              )
-            : RefreshIndicator(
+        child: RefreshIndicator(
                 color: AppColors.primaryOrange,
                 backgroundColor: AppColors.surface,
                 onRefresh: () async {

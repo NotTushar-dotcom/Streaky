@@ -39,6 +39,10 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _subtitleController;
   late Animation<double> _subtitleOpacity;
 
+  bool _animationDone = false;
+  bool _dataReady = false;
+  bool _navigated = false;
+
   @override
   void initState() {
     super.initState();
@@ -103,7 +107,44 @@ class _SplashScreenState extends State<SplashScreen>
       CurvedAnimation(parent: _subtitleController, curve: Curves.easeIn),
     );
 
+    // Start data loading in background while animation plays
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _preloadData();
+      }
+    });
     _startAnimation();
+  }
+
+  /// Load data in the background during the animation.
+  void _preloadData() {
+    final authProvider = context.read<AuthProvider>();
+
+    if (!authProvider.isLoggedIn) {
+      _dataReady = true;
+      return;
+    }
+
+    final uid = authProvider.uid;
+    context.read<UserProvider>().init(uid);
+    context.read<StreakProvider>().init(uid);
+
+    final streakProvider = context.read<StreakProvider>();
+
+    if (!streakProvider.isLoading) {
+      _dataReady = true;
+      return;
+    }
+
+    void listener() {
+      if (!streakProvider.isLoading) {
+        _dataReady = true;
+        streakProvider.removeListener(listener);
+        _tryNavigate();
+      }
+    }
+
+    streakProvider.addListener(listener);
   }
 
   Future<void> _startAnimation() async {
@@ -122,20 +163,24 @@ class _SplashScreenState extends State<SplashScreen>
     await Future.delayed(const Duration(milliseconds: 500));
     _subtitleController.forward();
 
-    // Navigate after showing the splash
+    // Let the user see the full splash
     await Future.delayed(const Duration(milliseconds: 1000));
+
+    _animationDone = true;
     if (mounted) {
-      _initializeAndNavigate();
+      _tryNavigate();
     }
   }
 
-  void _initializeAndNavigate() {
-    final authProvider = context.read<AuthProvider>();
+  /// Navigate only when both animation is done and data is ready.
+  void _tryNavigate() {
+    if (_navigated || !mounted) return;
+    if (!_animationDone || !_dataReady) return;
 
+    _navigated = true;
+
+    final authProvider = context.read<AuthProvider>();
     if (authProvider.isLoggedIn) {
-      // Init user & streak providers
-      context.read<UserProvider>().init(authProvider.uid);
-      context.read<StreakProvider>().init(authProvider.uid);
       context.go('/home');
     } else {
       context.go('/auth');
