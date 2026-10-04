@@ -2,10 +2,6 @@
 
 A new Flutter project.
 
-## CI/CD Status
-GitHub Actions automatically deploys Shorebird patches to your app on every push to the `main` branch.
-
-
 ## Getting Started
 
 This project is a starting point for a Flutter application.

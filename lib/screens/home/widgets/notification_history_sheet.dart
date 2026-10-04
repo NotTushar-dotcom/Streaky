@@ -125,6 +125,7 @@ class NotificationHistorySheet extends StatelessWidget {
                       GestureDetector(
                         onTap: () {
                           provider.clearAll();
+                          Navigator.of(context).pop();
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(
@@ -163,11 +164,48 @@ class NotificationHistorySheet extends StatelessWidget {
                         itemCount: notifications.length,
                         itemBuilder: (context, index) {
                           final notification = notifications[index];
-                          return _NotificationTile(
-                            notification: notification,
-                            timeAgo: _timeAgo(notification.receivedAt),
-                            formattedTime:
-                                _formatTime(notification.receivedAt),
+                          return Dismissible(
+                            key: ValueKey(notification.key),
+                            direction: DismissDirection.horizontal,
+                            onDismissed: (_) {
+                              provider.removeNotification(notification);
+                            },
+                            // Swipe left-to-right background
+                            background: Container(
+                              margin: const EdgeInsets.only(bottom: 8),
+                              padding: const EdgeInsets.only(left: 20),
+                              decoration: BoxDecoration(
+                                color: AppColors.error.withAlpha(30),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              alignment: Alignment.centerLeft,
+                              child: Icon(
+                                Icons.delete_outline_rounded,
+                                color: AppColors.error.withAlpha(180),
+                                size: 22,
+                              ),
+                            ),
+                            // Swipe right-to-left background
+                            secondaryBackground: Container(
+                              margin: const EdgeInsets.only(bottom: 8),
+                              padding: const EdgeInsets.only(right: 20),
+                              decoration: BoxDecoration(
+                                color: AppColors.error.withAlpha(30),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              alignment: Alignment.centerRight,
+                              child: Icon(
+                                Icons.delete_outline_rounded,
+                                color: AppColors.error.withAlpha(180),
+                                size: 22,
+                              ),
+                            ),
+                            child: _NotificationTile(
+                              notification: notification,
+                              timeAgo: _timeAgo(notification.receivedAt),
+                              formattedTime:
+                                  _formatTime(notification.receivedAt),
+                            ),
                           );
                         },
                       ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -21,22 +21,20 @@ void main() async {
   // when specific font weights/variants are missing from the bundled assets.
   GoogleFonts.config.allowRuntimeFetching = true;
 
-  // Lock to portrait mode (mobile only, not supported on web)
-  if (!kIsWeb) {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
+  // Lock to portrait mode
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
-        systemNavigationBarColor: Color(0xFF16142E),
-        systemNavigationBarIconBrightness: Brightness.light,
-      ),
-    );
-  }
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      systemNavigationBarColor: Color(0xFF16142E),
+      systemNavigationBarIconBrightness: Brightness.light,
+    ),
+  );
 
   // Initialize Firebase — wrapped in try/catch so the app still
   // launches even if Firebase connection fails (e.g. no internet).

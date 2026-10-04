@@ -419,7 +419,7 @@ class _StreakDetailsScreenState extends State<StreakDetailsScreen> {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: isCompleted
-                ? AppColors.limeSuccess
+                ? themeColor.withAlpha(35)
                 : isFuture
                     ? Colors.black.withAlpha(100)
                     : AppColors.surfaceLight,
@@ -427,16 +427,16 @@ class _StreakDetailsScreenState extends State<StreakDetailsScreen> {
               color: isToday
                   ? AppColors.cyanHighlight
                   : isCompleted
-                      ? AppColors.limeSuccess
+                      ? themeColor.withAlpha(80)
                       : AppColors.surfaceLight.withAlpha(120),
               width: isToday ? 2.0 : 1.0,
             ),
             boxShadow: isCompleted
                 ? [
                     BoxShadow(
-                      color: AppColors.limeSuccess.withAlpha(100),
-                      blurRadius: 8,
-                      spreadRadius: 1,
+                      color: themeColor.withAlpha(40),
+                      blurRadius: 12,
+                      spreadRadius: 0,
                     )
                   ]
                 : null,
@@ -446,7 +446,7 @@ class _StreakDetailsScreenState extends State<StreakDetailsScreen> {
             weekdays[i],
             style: GoogleFonts.outfit(
               color: isCompleted
-                  ? Colors.black87
+                  ? themeColor
                   : isFuture
                       ? AppColors.textHint
                       : AppColors.textSecondary,
@@ -686,7 +686,7 @@ class _StreakDetailsScreenState extends State<StreakDetailsScreen> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: isCompleted
-                      ? AppColors.limeSuccess
+                      ? themeColor.withAlpha(35)
                       : isFuture
                           ? Colors.transparent
                           : AppColors.surfaceLight.withAlpha(120),
@@ -694,16 +694,16 @@ class _StreakDetailsScreenState extends State<StreakDetailsScreen> {
                     color: isToday
                         ? AppColors.cyanHighlight
                         : isCompleted
-                            ? AppColors.limeSuccess
+                            ? themeColor.withAlpha(80)
                             : Colors.transparent,
                     width: isToday ? 2.0 : 1.0,
                   ),
                   boxShadow: isCompleted
                       ? [
                           BoxShadow(
-                            color: AppColors.limeSuccess.withAlpha(60),
-                            blurRadius: 6,
-                            spreadRadius: 1,
+                            color: themeColor.withAlpha(30),
+                            blurRadius: 10,
+                            spreadRadius: 0,
                           )
                         ]
                       : null,
@@ -713,7 +713,7 @@ class _StreakDetailsScreenState extends State<StreakDetailsScreen> {
                   '$dayNum',
                   style: GoogleFonts.outfit(
                     color: isCompleted
-                        ? Colors.black87
+                        ? themeColor
                         : isFuture
                             ? AppColors.textHint
                             : AppColors.textSecondary,

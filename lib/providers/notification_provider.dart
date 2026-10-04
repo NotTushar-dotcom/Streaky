@@ -20,6 +20,10 @@ class NotificationEntry {
     this.isRead = false,
   });
 
+  /// Unique key for this notification (used to track dismissals).
+  String get key =>
+      '${streakId}_${receivedAt.year}-${receivedAt.month}-${receivedAt.day}_${receivedAt.hour}:${receivedAt.minute}';
+
   Map<String, dynamic> toJson() => {
         'streakId': streakId,
         'title': title,
@@ -44,7 +48,9 @@ class NotificationEntry {
 /// Manages notification history — persisted via SharedPreferences.
 class NotificationProvider extends ChangeNotifier {
   List<NotificationEntry> _notifications = [];
+  Set<String> _dismissedKeys = {};
   static const String _storageKey = 'notification_history';
+  static const String _dismissedKey = 'notification_dismissed';
 
   List<NotificationEntry> get notifications => _notifications;
 
@@ -80,8 +86,22 @@ class NotificationProvider extends ChangeNotifier {
         final cutoff = DateTime.now().subtract(const Duration(days: 7));
         _notifications =
             _notifications.where((n) => n.receivedAt.isAfter(cutoff)).toList();
-        notifyListeners();
       }
+
+      // Load dismissed keys
+      final dismissedJson = prefs.getStringList(_dismissedKey);
+      if (dismissedJson != null) {
+        _dismissedKeys = dismissedJson.toSet();
+      }
+
+      // Clean up old dismissed keys (only keep today's)
+      final now = DateTime.now();
+      final todayPrefix = '${now.year}-${now.month}-${now.day}';
+      _dismissedKeys = _dismissedKeys
+          .where((k) => k.contains(todayPrefix))
+          .toSet();
+
+      notifyListeners();
     } catch (e) {
       debugPrint('Error loading notification history: $e');
     }
@@ -94,6 +114,7 @@ class NotificationProvider extends ChangeNotifier {
       final jsonStr =
           json.encode(_notifications.map((n) => n.toJson()).toList());
       await prefs.setString(_storageKey, jsonStr);
+      await prefs.setStringList(_dismissedKey, _dismissedKeys.toList());
     } catch (e) {
       debugPrint('Error saving notification history: $e');
     }
@@ -101,6 +122,9 @@ class NotificationProvider extends ChangeNotifier {
 
   /// Add a notification entry (called when a notification is received or scheduled).
   void addNotification(NotificationEntry entry) {
+    // Don't re-add dismissed notifications
+    if (_dismissedKeys.contains(entry.key)) return;
+
     // Prevent duplicate entries within 1 minute for the same streak
     final isDuplicate = _notifications.any((n) =>
         n.streakId == entry.streakId &&
@@ -163,7 +187,19 @@ class NotificationProvider extends ChangeNotifier {
 
   /// Clear all notifications.
   void clearAll() {
+    // Add all current notification keys to dismissed set so they won't come back
+    for (final n in _notifications) {
+      _dismissedKeys.add(n.key);
+    }
     _notifications.clear();
+    notifyListeners();
+    _saveHistory();
+  }
+
+  /// Remove a single notification.
+  void removeNotification(NotificationEntry entry) {
+    _dismissedKeys.add(entry.key);
+    _notifications.remove(entry);
     notifyListeners();
     _saveHistory();
   }
